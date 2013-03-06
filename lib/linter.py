@@ -1,29 +1,14 @@
 
-import sys
-import os
-
-__base__ = os.path.dirname(os.path.abspath(__file__))
-sys.path.insert(0, __base__)
-
-import collections
 import functools
+import os
 import re
-import threading
 
-import pyuv
 import sublime
-import sublime_plugin
 
-from ioloop import IOLoop
+from StreamingLinter import pyuv
+from StreamingLinter.lib import ui
 
 
-ioloop = IOLoop()
-io_thread = threading.Thread(target=ioloop.start)
-io_thread.start()
-
-view_messages = dict()
-view_regions = dict()
-linting_views = set()
 LINESEP = os.linesep.encode()
 
 
@@ -62,8 +47,8 @@ class Linter(object):
 
     @classmethod
     def run(cls, view):
-        _get_messages(view).clear()
-        _get_regions(view)[:] = list()
+        ui.get_messages(view).clear()
+        ui.get_regions(view)[:] = list()
         cls.run_command(view.file_name(), view)
 
     @classmethod
@@ -88,8 +73,8 @@ class Linter(object):
         if match:
             line = int(match.group('line_number')) - 1
 
-            messages = _get_messages(view)
-            regions = _get_regions(view)
+            messages = ui.get_messages(view)
+            regions = ui.get_regions(view)
             regions.append(view.full_line(view.text_point(line, 0)))
             msg = '%(code)s %(reason)s' % {'code': match.group('code'),
                                            'reason': match.group('reason')}
@@ -98,16 +83,16 @@ class Linter(object):
     @classmethod
     def command_finished(cls, view, proc, exit_status, term_signal):
         proc.close()
-        regions = _get_regions(view)
+        regions = ui.get_regions(view)
         draw_type = sublime.DRAW_EMPTY_AS_OVERWRITE | sublime.DRAW_OUTLINED
         scope = 'keyword'
         key = 'lint++'
         view.erase_regions(key)
         view.add_regions(key, regions, scope, 'dot', draw_type)
 
-        cur_line = get_selected_lineno(view)
-        update_status_message(view, cur_line)
-        linting_views.discard(view.id())
+        cur_line = ui.get_selected_lineno(view)
+        ui.update_status_message(view, cur_line)
+        ui.linting_views.discard(view.id())
 
 
 class Flake8(Linter):
@@ -120,63 +105,11 @@ class Flake8(Linter):
     command = 'flake8'
 
 
-def _get_messages(view):
-    if view.id() not in view_messages:
-        view_messages[view.id()] = collections.defaultdict(list)
-    return view_messages[view.id()]
-
-
-def _get_regions(view):
-    if view.id() not in view_regions:
-        view_regions[view.id()] = list()
-    return view_regions[view.id()]
-
-
-def get_selected_lineno(view):
-    sel = view.sel()
-    if not sel:
-        return None
-    return view.rowcol(sel[0].end())[0]
-
-
-def update_status_message(view, cur_line):
-    messages = _get_messages(view)
-    line_messages = messages.get(cur_line)
-    if line_messages:
-        view.set_status('lint++', ', '.join(line_messages))
-    else:
-        view.erase_status('lint++')
-
-
-def lint(view):
-    if get_syntax(view) != 'Python':
+def lint(view, ioloop):
+    if ui.get_syntax(view) != 'Python':
         return
-    if view.id() in linting_views:
+    if view.id() in ui.linting_views:
         return
 
-    linting_views.add(view.id())
+    ui.linting_views.add(view.id())
     ioloop.add_callback(Flake8.run, view)
-
-
-def get_syntax(view):
-    syntax = os.path.basename(view.settings().get('syntax'))
-    return os.path.splitext(syntax)[0]
-
-
-def plugin_unloaded():
-    ioloop.stop()
-
-
-class Listener(sublime_plugin.EventListener):
-
-    def __init__(self):
-        self.last_line = None
-
-    def on_post_save(self, view):
-        lint(view)
-
-    def on_selection_modified(self, view):
-        cur_line = get_selected_lineno(view)
-        if cur_line and cur_line != self.last_line:
-            self.last_line = cur_line
-            update_status_message(view, cur_line)
