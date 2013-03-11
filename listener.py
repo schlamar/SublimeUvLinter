@@ -11,8 +11,6 @@ io_thread = threading.Thread(target=ioloop.start)
 io_thread.start()
 
 
-# TODO: New architecture: create linter instance per view
-
 def plugin_unloaded():
     ioloop.stop()
 

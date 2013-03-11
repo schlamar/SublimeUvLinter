@@ -96,9 +96,7 @@ class Linter(object):
 
 
 class Flake8(Linter):
-    ''' Requires development snapshot:
-        https://bitbucket.org/tarek/flake8/src/f35b78bc29c5/?at=flint-merge
-    '''
+    ''' Requires 2.0 '''
     pattern = re.compile(r'^(?P<file_name>.+):(?P<line_number>\d+):'
                          '(?P<position>\d+):\s+(?P<code>\w{4,4})\s+'
                          '(?P<reason>.*)$')
