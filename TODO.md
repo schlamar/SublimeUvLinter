@@ -1,11 +1,6 @@
 TODO
 ====
 
-General
--------
-
-- Use view.buffer_id instead of view.id
-
 
 New architecture
 ----------------

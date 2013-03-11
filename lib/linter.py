@@ -85,7 +85,7 @@ class Linter(object):
 
         cur_line = ui.get_selected_lineno(view)
         ui.update_status_message(view, cur_line)
-        ui.linting_views.discard(view.id())
+        ui.linting_views.discard(view.buffer_id())
 
 
 class Flake8(Linter):
@@ -99,8 +99,8 @@ class Flake8(Linter):
 def lint(view, ioloop):
     if ui.get_syntax(view) != 'Python':
         return
-    if view.id() in ui.linting_views:
+    if view.buffer_id() in ui.linting_views:
         return
 
-    ui.linting_views.add(view.id())
+    ui.linting_views.add(view.buffer_id())
     ioloop.add_callback(Flake8.run, view)

@@ -26,9 +26,9 @@ def add_region(view, region):
 
 
 def get_messages(view):
-    if view.id() not in view_messages:
-        view_messages[view.id()] = collections.defaultdict(list)
-    return view_messages[view.id()]
+    if view.buffer_id() not in view_messages:
+        view_messages[view.buffer_id()] = collections.defaultdict(list)
+    return view_messages[view.buffer_id()]
 
 
 def get_selected_lineno(view):
