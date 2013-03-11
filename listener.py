@@ -25,6 +25,9 @@ class Listener(sublime_plugin.EventListener):
     def on_post_save(self, view):
         linter.lint(view, ioloop)
 
+    def on_load(self, view):
+        linter.lint(view, ioloop)
+
     def on_selection_modified(self, view):
         cur_line = ui.get_selected_lineno(view)
         if cur_line and cur_line != self.last_line:
