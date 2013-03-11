@@ -2,22 +2,33 @@
 import os
 import collections
 
+import sublime
+
 
 view_messages = dict()
-view_regions = dict()
 linting_views = set()
+
+
+KEY = 'streaming_linter'
+
+
+def clear(view):
+    view.erase_regions(KEY)
+
+
+def add_region(view, region):
+    regions = view.get_regions(KEY)
+    regions.append(region)
+
+    draw_type = sublime.DRAW_EMPTY_AS_OVERWRITE | sublime.DRAW_OUTLINED
+    scope = 'keyword'
+    view.add_regions(KEY, regions, scope, 'dot', draw_type)
 
 
 def get_messages(view):
     if view.id() not in view_messages:
         view_messages[view.id()] = collections.defaultdict(list)
     return view_messages[view.id()]
-
-
-def get_regions(view):
-    if view.id() not in view_regions:
-        view_regions[view.id()] = list()
-    return view_regions[view.id()]
 
 
 def get_selected_lineno(view):
@@ -31,9 +42,9 @@ def update_status_message(view, cur_line):
     messages = get_messages(view)
     line_messages = messages.get(cur_line)
     if line_messages:
-        view.set_status('lint++', ', '.join(line_messages))
+        view.set_status(KEY, ', '.join(line_messages))
     else:
-        view.erase_status('lint++')
+        view.erase_status(KEY)
 
 
 def get_syntax(view):

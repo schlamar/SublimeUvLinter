@@ -1,11 +1,10 @@
 TODO
 ====
 
-Streaming UI update
--------------------
+General
+-------
 
-- Update the UI while getting the streaming results
-  (only store messages and not regions)
+- Use view.buffer_id instead of view.id
 
 
 New architecture

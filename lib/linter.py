@@ -3,8 +3,6 @@ import functools
 import os
 import re
 
-import sublime
-
 from StreamingLinter import pyuv
 from StreamingLinter.lib import ui
 
@@ -48,11 +46,11 @@ class Linter(object):
     @classmethod
     def run(cls, view):
         ui.get_messages(view).clear()
-        ui.get_regions(view)[:] = list()
         cls.run_command(view.file_name(), view)
 
     @classmethod
     def run_command(cls, file_name, view):
+        ui.clear(view)
         loop = pyuv.Loop.default_loop()
         pipe = LineReaderPipe(loop)
         proc = pyuv.Process(loop)
@@ -73,9 +71,10 @@ class Linter(object):
         if match:
             line = int(match.group('line_number')) - 1
 
+            region = view.full_line(view.text_point(line, 0))
+            ui.add_region(view, region)
+
             messages = ui.get_messages(view)
-            regions = ui.get_regions(view)
-            regions.append(view.full_line(view.text_point(line, 0)))
             msg = '%(code)s %(reason)s' % {'code': match.group('code'),
                                            'reason': match.group('reason')}
             messages[line].append(msg)
@@ -83,12 +82,6 @@ class Linter(object):
     @classmethod
     def command_finished(cls, view, proc, exit_status, term_signal):
         proc.close()
-        regions = ui.get_regions(view)
-        draw_type = sublime.DRAW_EMPTY_AS_OVERWRITE | sublime.DRAW_OUTLINED
-        scope = 'keyword'
-        key = 'lint++'
-        view.erase_regions(key)
-        view.add_regions(key, regions, scope, 'dot', draw_type)
 
         cur_line = ui.get_selected_lineno(view)
         ui.update_status_message(view, cur_line)
