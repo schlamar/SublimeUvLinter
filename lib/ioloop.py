@@ -3,7 +3,7 @@ import collections
 import functools
 import logging
 
-from StreamingLinter import pyuv
+from SublimePyuv import pyuv
 
 
 class IOLoop(object):

@@ -3,7 +3,8 @@ import functools
 import os
 import re
 
-from StreamingLinter import pyuv
+from SublimePyuv import pyuv
+
 from StreamingLinter.lib import ui
 
 
