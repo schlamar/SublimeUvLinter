@@ -45,12 +45,11 @@ class Linter(object):
 
     @classmethod
     def run(cls, view):
-        ui.get_messages(view).clear()
+        ui.clear(view)
         cls.run_command(view.file_name(), view)
 
     @classmethod
     def run_command(cls, file_name, view):
-        ui.clear(view)
         loop = pyuv.Loop.default_loop()
         pipe = LineReaderPipe(loop)
         proc = pyuv.Process(loop)
@@ -72,7 +71,7 @@ class Linter(object):
             line = int(match.group('line_number')) - 1
 
             region = view.full_line(view.text_point(line, 0))
-            ui.add_region(view, region)
+            ui.add_region(view, line, region)
 
             messages = ui.get_messages(view)
             msg = '%(code)s %(reason)s' % {'code': match.group('code'),
