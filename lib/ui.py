@@ -13,17 +13,15 @@ KEY = 'streaming_linter'
 
 
 def clear(view):
-    for line in get_messages(view):
-        key = '%s%s' % (KEY, line)
-        view.erase_regions(key)
+    view.erase_regions(KEY)
     get_messages(view).clear()
 
 
-def add_region(view, line, region):
-    key = '%s%s' % (KEY, line)
+def add_regions(view, regions):
+    regions.extend(view.get_regions(KEY))
     draw_type = sublime.DRAW_EMPTY_AS_OVERWRITE | sublime.DRAW_OUTLINED
     scope = 'keyword'
-    view.add_regions(key, [region], scope, 'dot', draw_type)
+    view.add_regions(KEY, regions, scope, 'dot', draw_type)
 
 
 def get_messages(view):

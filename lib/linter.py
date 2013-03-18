@@ -18,22 +18,25 @@ class LineReaderPipe(pyuv.Pipe):
         self.callback = None
         self.buffer = b''
 
-    def on_pipe_read(self, pipe, data, error):
-        if error:
-            pipe.close()
-            return
-
+    def _line_generator(self, data):
         for line in data.splitlines(True):
             if not line[-len(LINESEP):] == LINESEP:
                 self.buffer += line
-                return
+                break
 
             line = line.strip()
             if self.buffer:
                 line = self.buffer + line
                 self.buffer = b''
 
-            self.callback(line)
+            yield line
+
+    def on_pipe_read(self, pipe, data, error):
+        if error:
+            pipe.close()
+            return
+
+        self.callback(self._line_generator(data))
 
     def start_read(self, callback):
         self.callback = callback
@@ -61,23 +64,26 @@ class Linter(object):
         exit_cb = functools.partial(cls.command_finished, view)
         proc.spawn(cls.command, exit_cb, (file_name,), stdio=ios,
                    flags=pyuv.UV_PROCESS_WINDOWS_HIDE)
-        line_cb = functools.partial(cls.process_line, view)
+        line_cb = functools.partial(cls.process_lines, view)
         pipe.start_read(line_cb)
 
     @classmethod
-    def process_line(cls, view, line):
-        line = line.decode('utf-8')
-        match = cls.pattern.match(line)
-        if match:
-            line = int(match.group('line_number')) - 1
+    def process_lines(cls, view, lines):
+        regions = list()
+        for line in lines:
+            line = line.decode('utf-8')
+            match = cls.pattern.match(line)
+            if match:
+                line = int(match.group('line_number')) - 1
 
-            region = view.full_line(view.text_point(line, 0))
-            ui.add_region(view, line, region)
+                region = view.full_line(view.text_point(line, 0))
+                regions.append(region)
 
-            messages = ui.get_messages(view)
-            msg = '%(code)s %(reason)s' % {'code': match.group('code'),
-                                           'reason': match.group('reason')}
-            messages[line].append(msg)
+                messages = ui.get_messages(view)
+                msg = '%(code)s %(reason)s' % {'code': match.group('code'),
+                                               'reason': match.group('reason')}
+                messages[line].append(msg)
+        ui.add_regions(view, regions)
 
     @classmethod
     def command_finished(cls, view, proc, exit_status, term_signal):
