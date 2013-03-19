@@ -1,4 +1,5 @@
 
+import collections
 import threading
 
 import sublime_plugin
@@ -18,16 +19,28 @@ def plugin_unloaded():
 class Listener(sublime_plugin.EventListener):
 
     def __init__(self):
-        self.last_line = None
+        self.linter = collections.defaultdict(list)
 
     def on_post_save(self, view):
-        linter.lint(view, ioloop)
+        self.lint(view)
 
     def on_load(self, view):
-        linter.lint(view, ioloop)
+        self.lint(view)
 
     def on_selection_modified(self, view):
-        cur_line = ui.get_selected_lineno(view)
-        if cur_line and cur_line != self.last_line:
-            self.last_line = cur_line
-            ui.update_status_message(view, cur_line)
+        for lint in self.linter[view.buffer_id()]:
+            lint.print_status_message(view)
+
+    def _create_linter(self, view):
+        syntax = ui.get_syntax(view)
+        for LinterClass in linter.implementations:
+            if syntax in LinterClass.syntax:
+                lint = LinterClass()
+                self.linter[view.buffer_id()].append(lint)
+
+    def lint(self, view):
+        if not self.linter[view.buffer_id()]:
+            self._create_linter(view)
+
+        for lint in self.linter[view.buffer_id()]:
+            ioloop.add_callback(lint.run, view)

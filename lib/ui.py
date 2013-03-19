@@ -1,12 +1,7 @@
 
 import os
-import collections
 
 import sublime
-
-
-view_messages = dict()
-linting_views = set()
 
 
 KEY = 'streaming_linter'
@@ -14,7 +9,6 @@ KEY = 'streaming_linter'
 
 def clear(view):
     view.erase_regions(KEY)
-    get_messages(view).clear()
 
 
 def add_regions(view, regions):
@@ -24,12 +18,6 @@ def add_regions(view, regions):
     view.add_regions(KEY, regions, scope, 'dot', draw_type)
 
 
-def get_messages(view):
-    if view.buffer_id() not in view_messages:
-        view_messages[view.buffer_id()] = collections.defaultdict(list)
-    return view_messages[view.buffer_id()]
-
-
 def get_selected_lineno(view):
     sel = view.sel()
     if not sel:
@@ -37,9 +25,7 @@ def get_selected_lineno(view):
     return view.rowcol(sel[0].end())[0]
 
 
-def update_status_message(view, cur_line):
-    messages = get_messages(view)
-    line_messages = messages.get(cur_line)
+def update_status_message(view, line_messages):
     if line_messages:
         view.set_status(KEY, ', '.join(line_messages))
     else:
