@@ -1,7 +1,6 @@
 
 import collections
 import functools
-import os
 import re
 
 from SublimePyuv import pyuv
@@ -9,7 +8,7 @@ from SublimePyuv import pyuv
 from StreamingLinter.lib import ui
 
 
-LINESEP = os.linesep.encode()
+LINESEPS = [b'\r\n', b'\n']
 
 
 class LineReaderPipe(pyuv.Pipe):
@@ -21,7 +20,11 @@ class LineReaderPipe(pyuv.Pipe):
 
     def _line_generator(self, data):
         for line in data.splitlines(True):
-            if not line[-len(LINESEP):] == LINESEP:
+            for sep in LINESEPS:
+                if line[-len(sep):] == sep:
+                    break
+            else:
+                # no line separator found
                 self.buffer += line
                 break
 
