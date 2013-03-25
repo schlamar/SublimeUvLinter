@@ -12,7 +12,6 @@ def clear(view):
 
 
 def add_regions(view, regions):
-    regions.extend(view.get_regions(KEY))
     draw_type = sublime.DRAW_EMPTY_AS_OVERWRITE | sublime.DRAW_OUTLINED
     scope = 'keyword'
     view.add_regions(KEY, regions, scope, 'dot', draw_type)
