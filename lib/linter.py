@@ -66,7 +66,7 @@ class Linter(object):
         self.in_progress = True
         self.messages.clear()
         self.regions = list()
-        ui.clear(view)
+        ui.clear(view, self.__class__.__name__)
         self.run_command(view)
 
     def run_command(self, view):
@@ -95,7 +95,8 @@ class Linter(object):
                 msg = '%(code)s %(reason)s' % {'code': match.group('code'),
                                                'reason': match.group('reason')}
                 self.messages[line].append(msg)
-        ui.add_regions(view, self.regions)
+
+        ui.add_regions(view, self.regions, self.__class__.__name__)
 
     def command_finished(self, view, proc, exit_status, term_signal):
         proc.close()
@@ -106,7 +107,8 @@ class Linter(object):
         cur_line = ui.get_selected_lineno(view)
         if cur_line and cur_line != self.last_line:
             self.last_line = cur_line
-            ui.update_status_message(view, self.messages.get(cur_line))
+            ui.update_status_message(view, self.messages.get(cur_line),
+                                     self.__class__.__name__)
 
 
 class Flake8(Linter):
