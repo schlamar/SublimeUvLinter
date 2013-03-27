@@ -117,7 +117,7 @@ class Flake8(Linter):
                          '(?P<position>\d+):\s+(?P<code>\w{4,4})\s+'
                          '(?P<reason>.*)$')
     command = 'flake8'
-    args = ['--immediate']  # Requires pep8 #181 applied
+    args = ['--immediate']
     syntax = ['Python']
 
 
