@@ -64,6 +64,7 @@ class Linter(object):
             return
 
         self.in_progress = True
+        self.last_line = None
         self.messages.clear()
         self.regions = list()
         ui.clear(view, self.__class__.__name__)
