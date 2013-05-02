@@ -1,19 +1,29 @@
 
 import collections
+import sys
 import threading
 
+import sublime
 import sublime_plugin
 
 from StreamingLinter.lib import ioloop, ui, linter
 
 
-ioloop = ioloop.IOLoop()
-io_thread = threading.Thread(target=ioloop.start)
+io_loop = ioloop.IOLoop()
+io_thread = threading.Thread(target=io_loop.start)
 io_thread.start()
 
 
 def plugin_unloaded():
-    ioloop.stop()
+    io_loop.stop()
+
+
+def plugin_loaded():
+    _mod = sys.modules[__name__]
+    listener = _mod.plugins[0]
+    for w in sublime.windows():
+        for g in range(w.num_groups()):
+            listener.on_load(w.active_view_in_group(g))
 
 
 class Listener(sublime_plugin.EventListener):
@@ -43,4 +53,4 @@ class Listener(sublime_plugin.EventListener):
             self._create_linter(view)
 
         for lint in self.linter[view.buffer_id()]:
-            ioloop.add_callback(lint.run, view)
+            io_loop.add_callback(lint.run, view)
