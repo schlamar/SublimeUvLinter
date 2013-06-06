@@ -21,7 +21,10 @@ def get_selected_lineno(view):
     sel = view.sel()
     if not sel:
         return None
-    return view.rowcol(sel[0].end())[0]
+    try:
+        return view.rowcol(sel[0].end())[0]
+    except IndexError:
+        return None
 
 
 def update_status_message(view, line_messages, key):
