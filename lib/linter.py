@@ -79,6 +79,7 @@ class Linter(object):
         ios = [pyuv.StdIO(),  # stdin - ignore
                pyuv.StdIO(pipe, flags=pyuv.UV_CREATE_PIPE |
                           pyuv.UV_WRITABLE_PIPE)]  # stdout - create pipe
+
         exit_cb = functools.partial(self.command_finished, view)
         proc.spawn(self.command, exit_cb, self.args + [file_name], stdio=ios,
                    flags=pyuv.UV_PROCESS_WINDOWS_HIDE)
@@ -101,8 +102,12 @@ class Linter(object):
 
     def command_finished(self, view, proc, exit_status, term_signal):
         proc.close()
-        self.print_status_message(view)
         self.in_progress = False
+
+        if exit_status:
+            print ('StreamingLinter: Error on subprocess: %s' % exit_status)
+        else:
+            self.print_status_message(view)
 
     def print_status_message(self, view):
         cur_line = ui.get_selected_lineno(view)
