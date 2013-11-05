@@ -5,6 +5,8 @@ import logging
 
 from SublimePyuv import pyuv
 
+log = logging.getLogger(__name__)
+
 
 class IOLoop(object):
     '''Simple version adopted from tornado-pyuv and rose.'''
@@ -45,4 +47,4 @@ class IOLoop(object):
             try:
                 callback()
             except Exception:
-                logging.exception('Error in callback')
+                log.exception('Error in callback')

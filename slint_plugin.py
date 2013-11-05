@@ -1,13 +1,15 @@
 
 import collections
+import logging
 import sys
 import threading
 
 import sublime
 import sublime_plugin
 
-from StreamingLinter.lib import ioloop, ui, linter
+from SpeedLinter.slint import ioloop, ui, linter
 
+logging.getLogger('SpeedLinter').setLevel(logging.DEBUG)
 
 io_loop = ioloop.IOLoop()
 io_thread = threading.Thread(target=io_loop.start)

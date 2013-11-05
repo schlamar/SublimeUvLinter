@@ -1,11 +1,14 @@
 
 import collections
 import functools
+import logging
 import re
 
 from SublimePyuv import pyuv
 
-from StreamingLinter.lib import ui
+from SpeedLinter.slint import ui
+
+log = logging.getLogger(__name__)
 
 
 LINESEPS = [b'\r\n', b'\n']
@@ -81,8 +84,11 @@ class Linter(object):
                           pyuv.UV_WRITABLE_PIPE)]  # stdout - create pipe
 
         exit_cb = functools.partial(self.command_finished, view)
-        proc.spawn(self.command, exit_cb, self.args + [file_name], stdio=ios,
+        args = self.args + [file_name]
+        log.debug('Running %s %s' % (self.command, ' '.join(args)))
+        proc.spawn(self.command, exit_cb, args, stdio=ios,
                    flags=pyuv.UV_PROCESS_WINDOWS_HIDE)
+
         line_cb = functools.partial(self.process_lines, view)
         pipe.start_read(line_cb)
 
@@ -105,7 +111,7 @@ class Linter(object):
         self.in_progress = False
 
         if exit_status:
-            print ('StreamingLinter: Error on subprocess: %s' % exit_status)
+            log.error('Error on subprocess: %s' % exit_status)
         else:
             self.print_status_message(view)
 
