@@ -1,13 +1,16 @@
 
 import collections
 import logging
-import sys
 import threading
 
 import sublime
 import sublime_plugin
 
 from SpeedLinter.slint import ioloop, ui, linter
+
+# ST sets this attribute with all defined commands and
+# instantiated event listeners in sublime_plugin.py
+plugins = list()
 
 logging.getLogger('SpeedLinter').setLevel(logging.DEBUG)
 
@@ -21,8 +24,11 @@ def plugin_unloaded():
 
 
 def plugin_loaded():
-    _mod = sys.modules[__name__]
-    listener = _mod.plugins[0]
+    for p in plugins:
+        if isinstance(p, Listener):
+            listener = p
+            break
+
     for w in sublime.windows():
         for g in range(w.num_groups()):
             listener.on_load(w.active_view_in_group(g))
