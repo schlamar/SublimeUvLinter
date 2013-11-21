@@ -42,6 +42,9 @@ class Listener(sublime_plugin.EventListener):
     def on_activated(self, view):
         self.lint(view)
 
+    def on_close(self, view):
+        self.linter.pop(view.buffer_id(), None)
+
     def on_selection_modified(self, view):
         for lint in self.linter[view.buffer_id()]:
             lint.print_status_message(view)
