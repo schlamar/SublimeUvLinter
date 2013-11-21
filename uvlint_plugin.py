@@ -6,13 +6,13 @@ import threading
 import sublime
 import sublime_plugin
 
-from SpeedLinter.slint import ioloop, ui, linter
+from UvLinter.uvlint import ioloop, ui, linter
 
 # ST sets this attribute with all defined commands and
 # instantiated event listeners in sublime_plugin.py
 plugins = list()
 
-logging.getLogger('SpeedLinter').setLevel(logging.DEBUG)
+logging.getLogger('UvLinter').setLevel(logging.DEBUG)
 
 io_loop = ioloop.IOLoop()
 io_thread = threading.Thread(target=io_loop.start)

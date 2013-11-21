@@ -6,7 +6,7 @@ import re
 
 from SublimePyuv import pyuv
 
-from SpeedLinter.slint import ui
+from UvLinter.uvlint import ui
 
 log = logging.getLogger(__name__)
 

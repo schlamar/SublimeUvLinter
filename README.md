@@ -1,5 +1,5 @@
-SpeedLinter
-===========
+UvLinter
+========
 
 Fast linter for Sublime Text 3 relying on the pipe streaming ability
 of pyuv/libuv.
@@ -17,4 +17,4 @@ Requirements
 Installation
 ------------
 
-- Extract or `git clone` this repository to [PackageDir]/SpeedLinter.
+- Extract or `git clone` this repository to [PackageDir]/UvLinter.
