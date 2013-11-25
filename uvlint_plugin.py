@@ -63,6 +63,9 @@ class Listener(sublime_plugin.EventListener):
                 self.linter[view.buffer_id()].append(lint)
 
     def lint(self, view):
+        if view.file_name() is None:
+            return
+
         if not self.linter[view.buffer_id()]:
             self._create_linter(view)
 
