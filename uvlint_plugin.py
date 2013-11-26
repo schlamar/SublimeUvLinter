@@ -8,9 +8,7 @@ import sublime_plugin
 
 from UvLinter.uvlint import ioloop, ui, linter
 
-# ST sets this attribute with all defined commands and
-# instantiated event listeners in sublime_plugin.py
-plugins = list()
+listener = None
 
 logging.getLogger('UvLinter').setLevel(logging.DEBUG)
 
@@ -24,11 +22,6 @@ def plugin_unloaded():
 
 
 def plugin_loaded():
-    for p in plugins:
-        if isinstance(p, Listener):
-            listener = p
-            break
-
     for w in sublime.windows():
         for g in range(w.num_groups()):
             listener.on_load(w.active_view_in_group(g))
@@ -37,6 +30,8 @@ def plugin_loaded():
 class Listener(sublime_plugin.EventListener):
 
     def __init__(self):
+        global listener
+        listener = self
         self.linter = collections.defaultdict(list)
 
     def on_post_save(self, view):
