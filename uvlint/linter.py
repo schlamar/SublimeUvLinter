@@ -111,7 +111,8 @@ class Linter(object):
         self.in_progress = False
 
         if exit_status:
-            log.error('Error on subprocess: %s' % exit_status)
+            log.error('Error on subprocess: %s %s'
+                      % (exit_status, term_signal))
         else:
             self.print_status_message(view)
 
