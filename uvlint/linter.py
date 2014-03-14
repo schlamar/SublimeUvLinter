@@ -131,7 +131,7 @@ class Flake8(Linter):
                          '(?P<reason>.*)$')
     command = 'flake8'
     args = ['--immediate', '--exit-zero']
-    syntax = ['Python']
+    syntax = ['Python', 'PythonImproved']
 
 
 implementations = [Flake8]
