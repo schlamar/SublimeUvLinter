@@ -1,6 +1,7 @@
 
 import collections
 import logging
+import os
 import threading
 
 import sublime
@@ -58,7 +59,8 @@ class Listener(sublime_plugin.EventListener):
                 self.linter[view.buffer_id()].append(lint)
 
     def lint(self, view):
-        if view.file_name() is None:
+        file_name = view.file_name()
+        if file_name is None or not os.path.isfile(file_name):
             return
 
         if not self.linter[view.buffer_id()]:
