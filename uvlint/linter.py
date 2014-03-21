@@ -4,7 +4,7 @@ import functools
 import logging
 import re
 
-from SublimePyuv import pyuv
+import pyuv
 
 from UvLinter.uvlint import ui
 

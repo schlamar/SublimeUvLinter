@@ -2,10 +2,18 @@
 import collections
 import logging
 import os
+import platform
+import sys
 import threading
 
 import sublime
 import sublime_plugin
+
+ROOT = os.path.abspath(os.path.dirname(__file__))
+PLAT_PACKAGES = os.path.join(ROOT, 'packages', sys.platform)
+if sys.platform != 'darwin':
+    PLAT_PACKAGES = os.path.join(PLAT_PACKAGES, platform.architecture()[0])
+sys.path.insert(0, PLAT_PACKAGES)
 
 from UvLinter.uvlint import ioloop, ui, linter
 

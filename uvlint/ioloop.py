@@ -3,7 +3,7 @@ import collections
 import functools
 import logging
 
-from SublimePyuv import pyuv
+import pyuv
 
 log = logging.getLogger(__name__)
 
