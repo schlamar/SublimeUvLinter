@@ -4,6 +4,9 @@ UvLinter
 Fast linter for Sublime Text 3 relying on the pipe streaming ability
 of pyuv/libuv.
 
+Currently, it supports only Python linting via flake8 but contributions
+are welcome!
+
 
 Requirements
 ------------
