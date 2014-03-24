@@ -1,0 +1,16 @@
+{
+    "schema_version": "2.0",
+    "packages": [
+        {
+            "name": "UvLinter",
+            "details": "https://github.com/schlamar/SublimeUvLinter",
+            "description": "Fast linter for SublimeText 3 using libuv/pyuv.",
+            "releases": [
+                {
+                    "sublime_text": ">=3000",
+                    "details": "https://github.com/schlamar/SublimeUvLinter/tags"
+                }
+            ]
+        }
+    ]
+}
