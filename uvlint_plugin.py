@@ -9,6 +9,8 @@ import threading
 import sublime
 import sublime_plugin
 
+__version__ = '0.1.0'
+
 ROOT = os.path.abspath(os.path.dirname(__file__))
 PLAT_PACKAGES = os.path.join(ROOT, 'packages', sys.platform)
 if sys.platform != 'darwin':
@@ -19,7 +21,8 @@ from UvLinter.uvlint import ioloop, ui, linter
 
 listener = None
 
-logging.getLogger('UvLinter').setLevel(logging.DEBUG)
+logger = logging.getLogger('UvLinter')
+logger.setLevel(logging.DEBUG)
 
 io_loop = ioloop.IOLoop()
 io_thread = threading.Thread(target=io_loop.start)
@@ -34,6 +37,8 @@ def plugin_loaded():
     for w in sublime.windows():
         for g in range(w.num_groups()):
             listener.on_load(w.active_view_in_group(g))
+
+    logger.debug('UvLinter loaded: v%s' % __version__)
 
 
 class Listener(sublime_plugin.EventListener):
