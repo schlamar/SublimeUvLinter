@@ -49,6 +49,8 @@ class Listener(sublime_plugin.EventListener):
         self.linter = collections.defaultdict(list)
 
     def on_post_save(self, view):
+        # workaround for https://github.com/SublimeText/Issues/issues/289
+        view = sublime.active_window().active_view()
         self.lint(view)
 
     def on_load(self, view):
