@@ -77,17 +77,16 @@ class Linter(object):
         file_name = view.file_name()
         loop = pyuv.Loop.default_loop()
         pipe = LineReaderPipe(loop)
-        proc = pyuv.Process(loop)
 
         ios = [pyuv.StdIO(),  # stdin - ignore
                pyuv.StdIO(pipe, flags=pyuv.UV_CREATE_PIPE |
                           pyuv.UV_WRITABLE_PIPE)]  # stdout - create pipe
 
         exit_cb = functools.partial(self.command_finished, view)
-        args = self.args + [file_name]
-        log.debug('Running %s %s' % (self.command, ' '.join(args)))
-        proc.spawn(self.command, exit_cb, args, stdio=ios,
-                   flags=pyuv.UV_PROCESS_WINDOWS_HIDE)
+        args = [self.command] + self.args + [file_name]
+        log.debug('Running %s' % ' '.join(args))
+        pyuv.Process.spawn(loop, args, exit_callback=exit_cb, stdio=ios,
+                           flags=pyuv.UV_PROCESS_WINDOWS_HIDE)
 
         line_cb = functools.partial(self.process_lines, view)
         pipe.start_read(line_cb)
