@@ -12,7 +12,6 @@ Requirements
 ------------
 
 - [flake8](https://bitbucket.org/tarek/flake8)
-- [flake8-immediate](https://github.com/schlamar/flake8-immediate)
 - Make sure that `flake8` is under your PATH in Sublime Text.
 
 

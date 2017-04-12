@@ -129,7 +129,7 @@ class Flake8(Linter):
                          '(?P<position>\d+):\s+(?P<code>\w{4,4})\s+'
                          '(?P<reason>.*)$')
     command = 'flake8'
-    args = ['--immediate', '--exit-zero']
+    args = ['--exit-zero']
     syntax = ['Python', 'PythonImproved']
 
 
