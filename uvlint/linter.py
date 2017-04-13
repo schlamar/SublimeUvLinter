@@ -75,6 +75,8 @@ class Linter(object):
 
     def run_command(self, view):
         file_name = view.file_name()
+        if file_name is None:
+            return
         loop = pyuv.Loop.default_loop()
         pipe = LineReaderPipe(loop)
 
